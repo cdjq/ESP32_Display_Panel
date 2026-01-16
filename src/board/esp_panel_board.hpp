@@ -12,6 +12,12 @@
 #include "esp_panel_board_conf_internal.h"
 #include "esp_panel_board_config.hpp"
 
+#include "drivers/io_expander/esp_panel_io_expander_conf_internal.h"
+
+#if ESP_PANEL_DRIVERS_EXPANDER_USE_ALL || ESP_PANEL_DRIVERS_EXPANDER_COMPILE_UNUSED_DRIVERS
+#include "drivers/io_expander/esp_panel_io_expander.hpp"
+#endif
+
 namespace esp_panel::board {
 
 /**
@@ -60,7 +66,9 @@ public:
      * @return `true` if successful, `false` otherwise
      * @note This function should be called before `init()`
      */
+#if ESP_PANEL_DRIVERS_EXPANDER_USE_ALL || ESP_PANEL_DRIVERS_EXPANDER_COMPILE_UNUSED_DRIVERS
     bool configIO_Expander(drivers::IO_Expander *expander);
+#endif
 
     /**
      * @brief Configure the callback function for a specific stage
@@ -147,10 +155,12 @@ public:
      *
      * @return Pointer to the IO Expander driver instance, or `nullptr` if IO Expander is not enabled or not initialized
      */
+#if ESP_PANEL_DRIVERS_EXPANDER_USE_ALL || ESP_PANEL_DRIVERS_EXPANDER_COMPILE_UNUSED_DRIVERS
     drivers::IO_Expander *getIO_Expander()
     {
         return _io_expander.get();
     }
+#endif
 
     /**
      * @brief Get the current board configuration
@@ -166,11 +176,13 @@ public:
      * @brief Alias for backward compatibility
      * @deprecated Use `configIO_Expander()` instead
      */
+#if ESP_PANEL_DRIVERS_EXPANDER_USE_ALL || ESP_PANEL_DRIVERS_EXPANDER_COMPILE_UNUSED_DRIVERS
     [[deprecated("Use `configIO_Expander()` instead")]]
     bool configExpander(drivers::IO_Expander *expander)
     {
         return configIO_Expander(expander);
     }
+#endif
 
     /**
      * @brief Alias for backward compatibility
@@ -186,11 +198,13 @@ public:
      * @brief Alias for backward compatibility
      * @deprecated Use `getIO_Expander()->getBase()` instead
      */
+#if ESP_PANEL_DRIVERS_EXPANDER_USE_ALL || ESP_PANEL_DRIVERS_EXPANDER_COMPILE_UNUSED_DRIVERS
     [[deprecated("Use `getIO_Expander()->getBase()` instead")]]
     esp_expander::Base *getExpander()
     {
         return (getIO_Expander() == nullptr) ? nullptr : getIO_Expander()->getBase();
     }
+#endif
 
     /**
      * @brief Alias for backward compatibility
@@ -258,12 +272,14 @@ private:
      *
      * @return `true` if IO Expander is used, `false` otherwise
      */
+#if ESP_PANEL_DRIVERS_EXPANDER_USE_ALL || ESP_PANEL_DRIVERS_EXPANDER_COMPILE_UNUSED_DRIVERS
     bool isIO_ExpanderUsed()
     {
         // return _config.io_expander.has_value();
 
         return true;
     }
+#endif
 
     BoardConfig _config = {};
     bool _use_default_config = false;
@@ -273,7 +289,9 @@ private:
     std::shared_ptr<drivers::Backlight> _backlight = nullptr;
     std::shared_ptr<drivers::Bus> _touch_bus = nullptr;
     std::shared_ptr<drivers::Touch> _touch_device = nullptr;
+#if ESP_PANEL_DRIVERS_EXPANDER_USE_ALL || ESP_PANEL_DRIVERS_EXPANDER_COMPILE_UNUSED_DRIVERS
     std::shared_ptr<drivers::IO_Expander> _io_expander = nullptr;
+#endif
 };
 
 } // namespace esp_panel

@@ -208,16 +208,20 @@ static esp_err_t panel_simple_init(esp_lcd_panel_t *panel)
             }
         }
 
-        // Send command - but for simple driver, we skip this
-        ESP_RETURN_ON_ERROR(esp_lcd_panel_io_tx_param(io, init_cmds[i].cmd, init_cmds[i].data, init_cmds[i].data_bytes), TAG, "send command failed");
-        ESP_LOGI(TAG, "Skipping command 0x%02X for simple driver", init_cmds[i].cmd);
-
+        // Send command
+        ESP_LOGI(TAG, "About to send i:%d/%d cmd:0x%02X data_bytes:%d delay_ms:%d", i, init_cmds_size, init_cmds[i].cmd,
+                 (int)init_cmds[i].data_bytes, (int)init_cmds[i].delay_ms);
+        esp_err_t tx_ret = esp_lcd_panel_io_tx_param(io, init_cmds[i].cmd, init_cmds[i].data, init_cmds[i].data_bytes);
+        // ESP_LOGI(TAG, "Sent i:%d cmd:0x%02X ret:0x%x", i, init_cmds[i].cmd, (unsigned)tx_ret);
+        ESP_RETURN_ON_ERROR(tx_ret, TAG, "send command failed");
+        // Give other tasks a chance (avoid WDT when sending lots of cmds)
+        taskYIELD();
         if (init_cmds[i].delay_ms > 0) {
             vTaskDelay(pdMS_TO_TICKS(init_cmds[i].delay_ms));
         }
     }
 
-    ESP_LOGI(TAG, "Simple LCD panel init completed - no commands sent");
+    ESP_LOGI(TAG, "Simple LCD panel init completed");
 
     ESP_RETURN_ON_ERROR(simple->init(panel), TAG, "init MIPI DPI panel failed");
 
@@ -229,10 +233,11 @@ static esp_err_t panel_simple_reset(esp_lcd_panel_t *panel)
     simple_panel_t *simple = (simple_panel_t *)panel->user_data;
 
     if (simple->reset_gpio_num >= 0) {
-        gpio_set_level(simple->reset_gpio_num, !simple->flags.reset_level);
+        gpio_set_level(simple->reset_gpio_num, 0);//!simple->flags.reset_level
         esp_rom_delay_us(10 * 1000); // 10ms
-        gpio_set_level(simple->reset_gpio_num, simple->flags.reset_level);
+        gpio_set_level(simple->reset_gpio_num, 1);//simple->flags.reset_level
         esp_rom_delay_us(10 * 1000); // 10ms
+        ESP_LOGI(TAG, "simple->reset_gpio_num:%d %d",(int)simple->reset_gpio_num,(int)simple->flags.reset_level);
         ESP_LOGI(TAG, "Simple LCD panel reset");
     }
 

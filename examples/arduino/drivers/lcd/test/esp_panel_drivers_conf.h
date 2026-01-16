@@ -24,13 +24,13 @@
  * Enable or disable bus drivers used in the factory class. Disable to reduce code size.
  * Set to `1` to enable, `0` to disable.
  */
-#define ESP_PANEL_DRIVERS_BUS_USE_ALL                   (1)
+#define ESP_PANEL_DRIVERS_BUS_USE_ALL                   (0)
 #if !ESP_PANEL_DRIVERS_BUS_USE_ALL
     #define ESP_PANEL_DRIVERS_BUS_USE_SPI               (0)
     #define ESP_PANEL_DRIVERS_BUS_USE_QSPI              (0)
     #define ESP_PANEL_DRIVERS_BUS_USE_RGB               (0)
     #define ESP_PANEL_DRIVERS_BUS_USE_I2C               (0)
-    #define ESP_PANEL_DRIVERS_BUS_USE_MIPI_DSI          (0)
+    #define ESP_PANEL_DRIVERS_BUS_USE_MIPI_DSI          (1)
 #endif // ESP_PANEL_DRIVERS_BUS_USE_ALL
 
 /**
@@ -50,7 +50,7 @@
  * |   0   |   1   |                 Yes                 |              No            |
  * |   1   |   1   |                 Yes                 |              Yes           |
  */
-#define ESP_PANEL_DRIVERS_BUS_COMPILE_UNUSED_DRIVERS    (1)
+#define ESP_PANEL_DRIVERS_BUS_COMPILE_UNUSED_DRIVERS    (0)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////// LCD Configurations ///////////////////////////////////////////////////
@@ -61,8 +61,9 @@
  * Enable or disable LCD drivers used in the factory class. Disable to reduce code size.
  * Set to `1` to enable, `0` to disable.
  */
-#define ESP_PANEL_DRIVERS_LCD_USE_ALL                   (1)
+#define ESP_PANEL_DRIVERS_LCD_USE_ALL                   (0)
 #if !ESP_PANEL_DRIVERS_LCD_USE_ALL
+    #define ESP_PANEL_DRIVERS_LCD_USE_SIMPLE            (1)
     #define ESP_PANEL_DRIVERS_LCD_USE_AXS15231B         (0)
     #define ESP_PANEL_DRIVERS_LCD_USE_EK9716B           (0)
     #define ESP_PANEL_DRIVERS_LCD_USE_EK79007           (0)
@@ -104,7 +105,7 @@
  * |   0   |   1   |                 Yes                 |              No            |
  * |   1   |   1   |                 Yes                 |              Yes           |
  */
-#define ESP_PANEL_DRIVERS_LCD_COMPILE_UNUSED_DRIVERS    (1)
+#define ESP_PANEL_DRIVERS_LCD_COMPILE_UNUSED_DRIVERS    (0)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////// Touch Configurations /////////////////////////////////////////////////
@@ -121,7 +122,7 @@
  * Enable or disable touch drivers used in the factory class. Disable to reduce code size.
  * Set to `1` to enable, `0` to disable.
  */
-#define ESP_PANEL_DRIVERS_TOUCH_USE_ALL                 (1)
+#define ESP_PANEL_DRIVERS_TOUCH_USE_ALL                 (0)
 #if !ESP_PANEL_DRIVERS_TOUCH_USE_ALL
     #define ESP_PANEL_DRIVERS_TOUCH_USE_AXS15231B       (0)
     #define ESP_PANEL_DRIVERS_TOUCH_USE_CHSC6540        (0)
@@ -206,7 +207,7 @@
  * Enable or disable IO Expander drivers used in the factory class. Disable to reduce code size.
  * Set to `1` to enable, `0` to disable.
  */
-#define ESP_PANEL_DRIVERS_EXPANDER_USE_ALL                      (1)
+#define ESP_PANEL_DRIVERS_EXPANDER_USE_ALL                      (0)
 #if !ESP_PANEL_DRIVERS_EXPANDER_USE_ALL
     #define ESP_PANEL_DRIVERS_EXPANDER_USE_CH422G               (0)
     #define ESP_PANEL_DRIVERS_EXPANDER_USE_HT8574               (0)
@@ -230,6 +231,8 @@
     #define ESP_PANEL_DRIVERS_BACKLIGHT_USE_PWM_LEDC            (0)
     #define ESP_PANEL_DRIVERS_BACKLIGHT_USE_CUSTOM              (0)
 #endif // ESP_PANEL_DRIVERS_BACKLIGHT_USE_ALL
+
+#define ESP_PANEL_DRIVERS_BACKLIGHT_COMPILE_UNUSED_DRIVERS     (0)
 
 /**
  * @brief Controls compilation of unused backlight drivers

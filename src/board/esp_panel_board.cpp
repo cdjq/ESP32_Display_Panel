@@ -6,7 +6,11 @@
 
 #include <memory>
 #include "utils/esp_panel_utils_log.h"
+
+#if ESP_PANEL_DRIVERS_EXPANDER_USE_ALL || ESP_PANEL_DRIVERS_EXPANDER_COMPILE_UNUSED_DRIVERS
 #include "drivers/io_expander/esp_panel_io_expander_adapter.hpp"
+#endif
+
 #include "esp_panel_board.hpp"
 #include "esp_panel_board_private.hpp"
 #include "esp_panel_board_default_config.hpp"
@@ -494,7 +498,9 @@ bool Board::del()
     _lcd_bus = nullptr;
     _touch_device = nullptr;
     _touch_bus = nullptr;
+#if ESP_PANEL_DRIVERS_EXPANDER_USE_ALL || ESP_PANEL_DRIVERS_EXPANDER_COMPILE_UNUSED_DRIVERS
     _io_expander = nullptr;
+#endif
 
     if (isOverState(State::BEGIN) && config.stage_callbacks[BoardConfig::STAGE_CALLBACK_POST_BOARD_DEL] != nullptr) {
         ESP_UTILS_LOGD("Board post-delete");
@@ -513,6 +519,7 @@ end:
     return true;
 }
 
+#if ESP_PANEL_DRIVERS_EXPANDER_USE_ALL || ESP_PANEL_DRIVERS_EXPANDER_COMPILE_UNUSED_DRIVERS
 bool Board::configIO_Expander(drivers::IO_Expander *expander)
 {
     ESP_UTILS_LOG_TRACE_ENTER_WITH_THIS();
@@ -527,6 +534,7 @@ bool Board::configIO_Expander(drivers::IO_Expander *expander)
 
     return true;
 }
+#endif
 
 bool Board::configCallback(board::BoardConfig::StageCallbackType type, BoardConfig::FunctionStageCallback callback)
 {

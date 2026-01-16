@@ -18,7 +18,7 @@
 #include "drivers/lcd/esp_panel_lcd_factory.hpp"
 #include "drivers/touch/esp_panel_touch_factory.hpp"
 #include "drivers/backlight/esp_panel_backlight_factory.hpp"
-#include "drivers/io_expander/esp_panel_io_expander_factory.hpp"
+// #include "drivers/io_expander/esp_panel_io_expander_factory.hpp"
 
 /* Board */
 #include "board/esp_panel_board.hpp"

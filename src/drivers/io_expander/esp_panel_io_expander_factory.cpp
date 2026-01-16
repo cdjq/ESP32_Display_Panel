@@ -5,11 +5,15 @@
  */
 
 #include "utils/esp_panel_utils_log.h"
-#include "esp_io_expander.hpp"
 #include "esp_panel_io_expander_conf_internal.h"
+
+#if ESP_PANEL_DRIVERS_EXPANDER_USE_ALL
+#include "esp_io_expander.hpp"
 #include "esp_panel_io_expander_adapter.hpp"
 #include "esp_panel_io_expander_factory.hpp"
+#endif
 
+#if ESP_PANEL_DRIVERS_EXPANDER_USE_ALL
 namespace esp_panel::drivers {
 
 #define DEVICE_CREATOR(chip) \
@@ -55,3 +59,4 @@ std::shared_ptr<IO_Expander> IO_ExpanderFactory::create(utils::string name, cons
 }
 
 } // namespace esp_panel::drivers
+#endif

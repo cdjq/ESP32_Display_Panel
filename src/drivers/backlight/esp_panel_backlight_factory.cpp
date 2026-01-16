@@ -21,14 +21,12 @@ struct ConfigVisitor {
 #endif
     }
 
+#if ESP_PANEL_DRIVERS_BACKLIGHT_ENABLE_SWITCH_EXPANDER
     auto operator()(const BacklightSwitchExpander::Config &config) const
     {
-#if ESP_PANEL_DRIVERS_BACKLIGHT_ENABLE_SWITCH_EXPANDER
         return BacklightSwitchExpander::BASIC_ATTRIBUTES_DEFAULT.type;
-#else
-        return -1;
-#endif
     }
+#endif
 
     auto operator()(const BacklightPWM_LEDC::Config &config) const
     {

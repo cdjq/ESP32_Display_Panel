@@ -11,12 +11,16 @@
 #include <string>
 #include <variant>
 #include "utils/esp_panel_utils_cxx.hpp"
+#include "esp_panel_backlight_conf_internal.h"
 #include "esp_panel_backlight.hpp"
 #include "esp_panel_backlight_custom.hpp"
 #include "esp_panel_backlight_pwm_ledc.hpp"
 #include "esp_panel_backlight_switch_gpio.hpp"
-#include "esp_panel_backlight_switch_expander.hpp"
 #include "esp_panel_backlight_i2c.hpp"
+
+#if ESP_PANEL_DRIVERS_BACKLIGHT_ENABLE_SWITCH_EXPANDER
+#include "esp_panel_backlight_switch_expander.hpp"
+#endif
 
 namespace esp_panel::drivers {
 
@@ -36,7 +40,9 @@ public:
                    drivers::BacklightCustom::Config,
                    drivers::BacklightPWM_LEDC::Config,
                    drivers::BacklightSwitchGPIO::Config,
+#if ESP_PANEL_DRIVERS_BACKLIGHT_ENABLE_SWITCH_EXPANDER
                    drivers::BacklightSwitchExpander::Config,
+#endif
                    drivers::BacklightI2C::Config
                    >;
 

@@ -12,7 +12,12 @@
 #include "drivers/lcd/esp_panel_lcd_factory.hpp"
 #include "drivers/touch/esp_panel_touch_factory.hpp"
 #include "drivers/backlight/esp_panel_backlight_factory.hpp"
+#include "drivers/io_expander/esp_panel_io_expander_conf_internal.h"
+
+#if ESP_PANEL_DRIVERS_EXPANDER_USE_ALL || ESP_PANEL_DRIVERS_EXPANDER_COMPILE_UNUSED_DRIVERS
 #include "drivers/io_expander/esp_panel_io_expander_factory.hpp"
+#include "drivers/io_expander/esp_panel_io_expander.hpp"
+#endif
 
 namespace esp_panel::board {
 
@@ -90,6 +95,7 @@ struct BoardConfig {
         } pre_process;                              /*!< Backlight pre-process flags */
     };
 
+#if ESP_PANEL_DRIVERS_EXPANDER_USE_ALL || ESP_PANEL_DRIVERS_EXPANDER_COMPILE_UNUSED_DRIVERS
     /**
      * @brief IO expander related configuration
      */
@@ -97,6 +103,7 @@ struct BoardConfig {
         const char *name = "";                      /*!< IO expander device name */
         drivers::IO_Expander::Config config;        /*!< IO expander device configuration */
     };
+#endif
 
     bool isValid() const
     {
@@ -107,7 +114,9 @@ struct BoardConfig {
     std::optional<LCD_Config> lcd;                  /*!< LCD configuration */
     std::optional<TouchConfig> touch;               /*!< Touch configuration */
     std::optional<BacklightConfig> backlight;       /*!< Backlight configuration */
-    // std::optional<IO_ExpanderConfig> io_expander;   /*!< IO expander configuration */
+#if ESP_PANEL_DRIVERS_EXPANDER_USE_ALL || ESP_PANEL_DRIVERS_EXPANDER_COMPILE_UNUSED_DRIVERS
+    std::optional<IO_ExpanderConfig> io_expander;   /*!< IO expander configuration */
+#endif
     std::array<FunctionStageCallback, STAGE_CALLBACK_MAX> stage_callbacks; /*!< Stage callback functions */
 };
 

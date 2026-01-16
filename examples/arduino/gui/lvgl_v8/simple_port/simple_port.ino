@@ -86,6 +86,11 @@ void setup()
 
     /* Release the mutex */
     lvgl_port_unlock();
+
+    auto backlight = board->getBacklight();
+    if (backlight) {
+        backlight->setBrightness(20); //背光
+    }
 }
 
 void loop()

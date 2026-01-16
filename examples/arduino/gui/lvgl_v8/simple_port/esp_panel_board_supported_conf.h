@@ -18,7 +18,7 @@
  *
  * Set to `1` to enable supported board configuration, `0` to disable
  */
-#define ESP_PANEL_BOARD_DEFAULT_USE_SUPPORTED       (0)
+#define ESP_PANEL_BOARD_DEFAULT_USE_SUPPORTED       (1)
 
 #if ESP_PANEL_BOARD_DEFAULT_USE_SUPPORTED
 /**
@@ -163,6 +163,10 @@
 // #define BOARD_VIEWE_UEDX80480050E_WB_A
 // #define BOARD_VIEWE_UEDX80480050E_WB_A_2
 // #define BOARD_VIEWE_UEDX80480070E_WB_A
+
+
+
+#define BOARD_DFROBOT_FIREBEETLE_ESP32_P4_LCD_4_3
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////// File Version ///////////////////////////////////////////////////////////

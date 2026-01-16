@@ -24,13 +24,13 @@
  * Enable or disable bus drivers used in the factory class. Disable to reduce code size.
  * Set to `1` to enable, `0` to disable.
  */
-#define ESP_PANEL_DRIVERS_BUS_USE_ALL                   (1)
+#define ESP_PANEL_DRIVERS_BUS_USE_ALL                   (0)
 #if !ESP_PANEL_DRIVERS_BUS_USE_ALL
     #define ESP_PANEL_DRIVERS_BUS_USE_SPI               (0)
     #define ESP_PANEL_DRIVERS_BUS_USE_QSPI              (0)
     #define ESP_PANEL_DRIVERS_BUS_USE_RGB               (0)
-    #define ESP_PANEL_DRIVERS_BUS_USE_I2C               (0)
-    #define ESP_PANEL_DRIVERS_BUS_USE_MIPI_DSI          (0)
+    #define ESP_PANEL_DRIVERS_BUS_USE_I2C               (1)
+    #define ESP_PANEL_DRIVERS_BUS_USE_MIPI_DSI          (1)
 #endif // ESP_PANEL_DRIVERS_BUS_USE_ALL
 
 /**
@@ -50,7 +50,7 @@
  * |   0   |   1   |                 Yes                 |              No            |
  * |   1   |   1   |                 Yes                 |              Yes           |
  */
-#define ESP_PANEL_DRIVERS_BUS_COMPILE_UNUSED_DRIVERS    (1)
+#define ESP_PANEL_DRIVERS_BUS_COMPILE_UNUSED_DRIVERS    (0)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////// LCD Configurations ///////////////////////////////////////////////////
@@ -63,6 +63,7 @@
  */
 #define ESP_PANEL_DRIVERS_LCD_USE_ALL                   (0)
 #if !ESP_PANEL_DRIVERS_LCD_USE_ALL
+    #define ESP_PANEL_DRIVERS_LCD_USE_SIMPLE            (1)
     #define ESP_PANEL_DRIVERS_LCD_USE_AXS15231B         (0)
     #define ESP_PANEL_DRIVERS_LCD_USE_EK9716B           (0)
     #define ESP_PANEL_DRIVERS_LCD_USE_EK79007           (0)
@@ -104,7 +105,7 @@
  * |   0   |   1   |                 Yes                 |              No            |
  * |   1   |   1   |                 Yes                 |              Yes           |
  */
-#define ESP_PANEL_DRIVERS_LCD_COMPILE_UNUSED_DRIVERS    (1)
+#define ESP_PANEL_DRIVERS_LCD_COMPILE_UNUSED_DRIVERS    (0)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////// Touch Configurations /////////////////////////////////////////////////
@@ -132,7 +133,7 @@
     #define ESP_PANEL_DRIVERS_TOUCH_USE_GT1151          (0)
     #define ESP_PANEL_DRIVERS_TOUCH_USE_SPD2010         (0)
     #define ESP_PANEL_DRIVERS_TOUCH_USE_ST1633          (0)
-    #define ESP_PANEL_DRIVERS_TOUCH_USE_ST7123          (0)
+    #define ESP_PANEL_DRIVERS_TOUCH_USE_ST7123          (1)
     #define ESP_PANEL_DRIVERS_TOUCH_USE_STMPE610        (0)
     #define ESP_PANEL_DRIVERS_TOUCH_USE_TT21100         (0)
     #define ESP_PANEL_DRIVERS_TOUCH_USE_XPT2046         (0)
@@ -155,7 +156,7 @@
  * |   0   |   1   |                 Yes                 |              No            |
  * |   1   |   1   |                 Yes                 |              Yes           |
  */
-#define ESP_PANEL_DRIVERS_TOUCH_COMPILE_UNUSED_DRIVERS          (1)
+#define ESP_PANEL_DRIVERS_TOUCH_COMPILE_UNUSED_DRIVERS          (0)
 
 #if ESP_PANEL_DRIVERS_TOUCH_USE_XPT2046 || ESP_PANEL_DRIVERS_TOUCH_COMPILE_UNUSED_DRIVERS
 /**
@@ -223,13 +224,15 @@
  * Enable or disable backlight drivers used in the factory class. Disable to reduce code size.
  * Set to `1` to enable, `0` to disable.
  */
-#define ESP_PANEL_DRIVERS_BACKLIGHT_USE_ALL                     (1)
+#define ESP_PANEL_DRIVERS_BACKLIGHT_USE_ALL                     (0)
 #if !ESP_PANEL_DRIVERS_BACKLIGHT_USE_ALL
     #define ESP_PANEL_DRIVERS_BACKLIGHT_USE_SWITCH_GPIO         (0)
     #define ESP_PANEL_DRIVERS_BACKLIGHT_USE_SWITCH_EXPANDER     (0)
-    #define ESP_PANEL_DRIVERS_BACKLIGHT_USE_PWM_LEDC            (0)
+    #define ESP_PANEL_DRIVERS_BACKLIGHT_USE_PWM_LEDC            (1)
     #define ESP_PANEL_DRIVERS_BACKLIGHT_USE_CUSTOM              (0)
 #endif // ESP_PANEL_DRIVERS_BACKLIGHT_USE_ALL
+
+#define ESP_PANEL_DRIVERS_BACKLIGHT_COMPILE_UNUSED_DRIVERS     (0)
 
 /**
  * @brief Controls compilation of unused backlight drivers
@@ -248,7 +251,7 @@
  * |   0   |   1   |                 Yes                 |              No            |
  * |   1   |   1   |                 Yes                 |              Yes           |
  */
-#define ESP_PANEL_DRIVERS_BACKLIGHT_COMPILE_UNUSED_DRIVERS     (1)
+#define ESP_PANEL_DRIVERS_BACKLIGHT_COMPILE_UNUSED_DRIVERS     (0)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////// File Version ///////////////////////////////////////////////////////////

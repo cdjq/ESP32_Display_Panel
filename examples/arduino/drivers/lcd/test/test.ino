@@ -3,6 +3,7 @@
  */
 
 #include <Arduino.h>
+#include <vector>
 #include <esp_display_panel.hpp>
 
 using namespace esp_panel::drivers;
@@ -111,6 +112,92 @@ const esp_panel_lcd_vendor_init_cmd_t lcd_init_cmd[] = {
 #define EXAMPLE_LCD_BL_IO           (11)    // Set to -1 if not used
 #define EXAMPLE_LCD_BL_ON_LEVEL     (1)
 #define EXAMPLE_LCD_BL_OFF_LEVEL    (!EXAMPLE_LCD_BL_ON_LEVEL)
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////// Please update the following configuration according to your touch spec ////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#define EXAMPLE_TOUCH_NAME              ST7123
+#define EXAMPLE_TOUCH_ADDRESS           (0)
+#define EXAMPLE_TOUCH_WIDTH             (EXAMPLE_LCD_WIDTH)
+#define EXAMPLE_TOUCH_HEIGHT            (EXAMPLE_LCD_HEIGHT)
+#define EXAMPLE_TOUCH_I2C_FREQ_HZ       (400 * 1000)
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////// Please update the following configuration according to your board spec ////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#define EXAMPLE_TOUCH_I2C_IO_SCL        (8)
+#define EXAMPLE_TOUCH_I2C_IO_SDA        (7)
+#define EXAMPLE_TOUCH_I2C_SCL_PULLUP    (0)
+#define EXAMPLE_TOUCH_I2C_SDA_PULLUP    (0)
+#define EXAMPLE_TOUCH_RST_IO            (-1)
+#define EXAMPLE_TOUCH_RST_ACTIVE_LEVEL  (0)
+#define EXAMPLE_TOUCH_INT_IO            (-1)
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////// Please update the following configuration according to your test ///////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#define EXAMPLE_TOUCH_ENABLE_CREATE_WITH_CONFIG (1)
+#define EXAMPLE_TOUCH_ENABLE_INTERRUPT_CALLBACK (0)
+#define EXAMPLE_TOUCH_READ_PERIOD_MS            (30)
+
+#define _EXAMPLE_TOUCH_CLASS(name, ...) Touch##name(__VA_ARGS__)
+#define EXAMPLE_TOUCH_CLASS(name, ...)  _EXAMPLE_TOUCH_CLASS(name, ##__VA_ARGS__)
+
+#if EXAMPLE_TOUCH_ENABLE_INTERRUPT_CALLBACK
+IRAM_ATTR static bool onTouchInterruptCallback(void *user_data)
+{
+    esp_rom_printf("Touch interrupt callback\n");
+
+    return false;
+}
+#endif
+
+static Touch *create_touch_without_config(void)
+{
+    BusI2C *bus = new BusI2C(
+        EXAMPLE_TOUCH_I2C_IO_SCL, EXAMPLE_TOUCH_I2C_IO_SDA,
+#if EXAMPLE_TOUCH_ADDRESS == 0
+        (BusI2C::ControlPanelFullConfig)ESP_PANEL_TOUCH_I2C_CONTROL_PANEL_CONFIG(EXAMPLE_TOUCH_NAME)
+#else
+        (BusI2C::ControlPanelFullConfig)ESP_PANEL_TOUCH_I2C_CONTROL_PANEL_CONFIG_WITH_ADDR(EXAMPLE_TOUCH_NAME, EXAMPLE_TOUCH_ADDRESS)
+#endif
+    );
+
+    return new EXAMPLE_TOUCH_CLASS(
+        EXAMPLE_TOUCH_NAME, bus, EXAMPLE_TOUCH_WIDTH, EXAMPLE_TOUCH_HEIGHT,
+        EXAMPLE_TOUCH_RST_IO, EXAMPLE_TOUCH_INT_IO
+    );
+}
+
+static Touch *create_touch_with_config(void)
+{
+    BusI2C::Config bus_config = {
+        .host = BusI2C::HostPartialConfig{
+            .sda_io_num = EXAMPLE_TOUCH_I2C_IO_SDA,
+            .scl_io_num = EXAMPLE_TOUCH_I2C_IO_SCL,
+            // .sda_pullup_en = EXAMPLE_TOUCH_I2C_SDA_PULLUP,
+            // .scl_pullup_en = EXAMPLE_TOUCH_I2C_SCL_PULLUP,
+            // .clk_speed = EXAMPLE_TOUCH_I2C_FREQ_HZ,
+        },
+        .control_panel = (BusI2C::ControlPanelFullConfig)
+#if EXAMPLE_TOUCH_ADDRESS == 0
+            ESP_PANEL_TOUCH_I2C_CONTROL_PANEL_CONFIG(EXAMPLE_TOUCH_NAME),
+#else
+            ESP_PANEL_TOUCH_I2C_CONTROL_PANEL_CONFIG_WITH_ADDR(EXAMPLE_TOUCH_NAME, EXAMPLE_TOUCH_ADDRESS),
+#endif
+    };
+    Touch::Config touch_config = {
+        .device = Touch::DevicePartialConfig{
+            .x_max = EXAMPLE_TOUCH_WIDTH,
+            .y_max = EXAMPLE_TOUCH_HEIGHT,
+            .rst_gpio_num = EXAMPLE_TOUCH_RST_IO,
+            .int_gpio_num = EXAMPLE_TOUCH_INT_IO,
+            .levels_reset = EXAMPLE_TOUCH_RST_ACTIVE_LEVEL,
+        },
+    };
+
+    return new EXAMPLE_TOUCH_CLASS(EXAMPLE_TOUCH_NAME, bus_config, touch_config);
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////// Please update the following configuration according to your test ///////////////////////////////
@@ -227,15 +314,11 @@ IRAM_ATTR bool onLCD_DrawFinishCallback(void *user_data)
 }
 #endif
 
+static Touch *touch = nullptr;
+
 void setup()
 {
     Serial.begin(115200);
-    // pinMode(10, OUTPUT);
-    
-    // digitalWrite(10, 0);
-    // delay(10);
-    // digitalWrite(10, 1);
-    // delay(100);
 
 #if EXAMPLE_LCD_BL_IO >= 0
     pinMode(11, OUTPUT);
@@ -285,10 +368,52 @@ void setup()
 
     Serial.println("Draw color bar from top left to bottom right, the order is B - G - R");
     lcd->colorBarTest();
+
+#if EXAMPLE_TOUCH_ENABLE_CREATE_WITH_CONFIG
+    Serial.println("Initializing \"I2C\" touch with config");
+    touch = create_touch_with_config();
+#else
+    Serial.println("Initializing \"I2C\" touch without config");
+    touch = create_touch_without_config();
+#endif
+
+#if !EXAMPLE_TOUCH_ENABLE_CREATE_WITH_CONFIG
+    /* Configure bus and touch before startup */
+    auto bus = static_cast<BusI2C *>(touch->getBus());
+    bus->configI2C_FreqHz(EXAMPLE_TOUCH_I2C_FREQ_HZ);
+    bus->configI2C_PullupEnable(EXAMPLE_TOUCH_I2C_SDA_PULLUP, EXAMPLE_TOUCH_I2C_SCL_PULLUP);
+    touch->configResetActiveLevel(EXAMPLE_TOUCH_RST_ACTIVE_LEVEL);
+#endif
+
+    assert(touch->begin());
+#if EXAMPLE_TOUCH_ENABLE_INTERRUPT_CALLBACK
+    if (touch->isInterruptEnabled()) {
+        touch->attachInterruptCallback(onTouchInterruptCallback);
+    }
+#endif
+
+    Serial.println("Reading touch points and buttons...");
 }
 
 void loop()
 {
-    Serial.println("IDLE loop");
-    delay(1000);
+    touch->readRawData(-1, -1, EXAMPLE_TOUCH_READ_PERIOD_MS);
+
+    std::vector<TouchPoint> points;
+    int i = 0;
+    touch->getPoints(points);
+    for (auto &point : points) {
+        Serial.printf("Touch point(%d): x %d, y %d, strength %d\n", i++, point.x, point.y, point.strength);
+    }
+
+    std::vector<TouchButton> buttons;
+    i = 0;
+    touch->getButtons(buttons);
+    for (auto &button : buttons) {
+        Serial.printf("Touch button(%d): %d\n", i++, button.second);
+    }
+
+    if (!touch->isInterruptEnabled()) {
+        delay(EXAMPLE_TOUCH_READ_PERIOD_MS);
+    }
 }
